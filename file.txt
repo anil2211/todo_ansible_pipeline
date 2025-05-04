@@ -1,0 +1,19 @@
+first creat folder
+npx create-react-app todo-frontend
+cd ..
+mkdir todo-backend
+cd todo-backend
+npm init -y
+npm i express
+npm i mongoose
+npm i cors
+npm i body-parser
+create server.js file
+npm start
+npm i nodemon --dev
+nodemon server.js
+nodemon server.js
+use mongo db online
+on package.json- "start": "node server.js"
+npm start
+test library added jest,supertest
