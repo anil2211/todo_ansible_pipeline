@@ -13,8 +13,8 @@
   become: yes
   service: yes
   name: httpd
-    state: started
-    enabled: yes
+  state: started
+  enabled: yes
 
 - name: Copy Source code
   become: yes
@@ -27,5 +27,5 @@
        -"--exclude=.git"
        -"--exclude=.github"
        -"--exclude=ansible"
-       
+
   
