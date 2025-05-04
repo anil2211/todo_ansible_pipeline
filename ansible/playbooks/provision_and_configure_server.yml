@@ -4,6 +4,12 @@
   gather_facts: no
   roles:
     - ec2_launch
+
+- name: Configure of Ec2 instance
+  hosts: launched_ec2_instances
+  gather_facts: yes
+  roles:
+    - common
   
 
 # move this code into ec2_launch - tasks- main.yml file
