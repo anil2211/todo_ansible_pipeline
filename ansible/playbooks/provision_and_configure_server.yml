@@ -2,42 +2,45 @@
 - name: Provision EC2 instance and install
   hosts: localhost
   gather_facts: no
+  roles:
+    - ec2_launch
 
-  tasks:
-      - name: Adding ssh access to a security group
-        amazon.aws.ec2_group:
-          name: default
-          description: security group for Ec2 instance launched via ansible
-          region: ap-south-1
-          rules:
-            - proto: tcp
-              from_port: 8080
-              to_port: 8080
-              cidr_ip: 0.0.0.0/0
-            - proto: tcp
-              from_port: 80
-              to_port: 80
-              cidr_ip: 0.0.0.0/0
-            - proto: tcp
-              from_port: 3000
-              to_port: 3000
-              cidr_ip: 0.0.0.0/0
-            - proto: tcp
-              from_port: 3002
-              to_port: 3002
-              cidr_ip: 0.0.0.0/0
-            - proto: tcp
-              from_port: 3001
-              to_port: 3001
-              cidr_ip: 0.0.0.0/0        
-            - proto: tcp
-              from_port: 22
-              to_port: 22
-              cidr_ip: 0.0.0.0/0
-          rules_egress:
-            - proto: all
-              cidr_ip: 0.0.0.0/0
-        register: security_group
+# move this code into ec2_launch - tasks- main.yml file
+  # tasks:
+      # - name: Adding ssh access to a security group
+      #   amazon.aws.ec2_group:
+      #     name: default
+      #     description: security group for Ec2 instance launched via ansible
+      #     region: ap-south-1
+      #     rules:
+      #       - proto: tcp
+      #         from_port: 8080
+      #         to_port: 8080
+      #         cidr_ip: 0.0.0.0/0
+      #       - proto: tcp
+      #         from_port: 80
+      #         to_port: 80
+      #         cidr_ip: 0.0.0.0/0
+      #       - proto: tcp
+      #         from_port: 3000
+      #         to_port: 3000
+      #         cidr_ip: 0.0.0.0/0
+      #       - proto: tcp
+      #         from_port: 3002
+      #         to_port: 3002
+      #         cidr_ip: 0.0.0.0/0
+      #       - proto: tcp
+      #         from_port: 3001
+      #         to_port: 3001
+      #         cidr_ip: 0.0.0.0/0        
+      #       - proto: tcp
+      #         from_port: 22
+      #         to_port: 22
+      #         cidr_ip: 0.0.0.0/0
+      #     rules_egress:
+      #       - proto: all
+      #         cidr_ip: 0.0.0.0/0
+      #   register: security_group
 
     
     
