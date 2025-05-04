@@ -16,11 +16,11 @@
     state: started
     enabled: yes
 
-- name: Copy Source code
+- name: Copy Source code from local to remote
   become: yes
   synchronize:
     src: "{{ playbook_dir }}/../../"
-    dest: "/opt/todo-app"
+    dest: "/opt/todo-app"    #folder in which the code will be copied
     recursive: yes
     rsync_opts:
       - --exclude=.git

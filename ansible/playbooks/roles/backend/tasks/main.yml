@@ -6,7 +6,6 @@
      path: /opt/todo-app/todo-backend
      state: present
 
-
 - name: Install PM2 globally
   become: yes
   npm: 

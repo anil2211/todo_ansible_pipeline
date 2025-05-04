@@ -2,7 +2,7 @@
 # tasks file for ec2_launch
 - name: Adding ssh access to a security group
   amazon.aws.ec2_group:
-    name: default
+    name: default_remote
     description: security group for Ec2 instance launched via ansible
     region: ap-south-1
     rules:
@@ -37,7 +37,7 @@
 
 - name: Launch EC2 instance
   amazon.aws.ec2_instance:
-    name: Ansible-created
+    name: Ansible-created-remore
     key_name: "{{ ec2_key_name }}"
     region: "{{aws_region}}"
     instance_type: "{{ec2_instance_type}}"
@@ -51,7 +51,7 @@
     host: "{{ ec2.instances[0].public_dns_name }}"
     port: 22
     delay: 30
-    timeout: 400
+    timeout: 300
     state: started
   when: ec2.instances is defined and ec2.instances | length > 0
 
