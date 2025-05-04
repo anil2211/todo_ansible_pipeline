@@ -4,6 +4,7 @@
   gather_facts: no
   roles:
     - ec2_launch
+  
 
 # move this code into ec2_launch - tasks- main.yml file
   # tasks:
