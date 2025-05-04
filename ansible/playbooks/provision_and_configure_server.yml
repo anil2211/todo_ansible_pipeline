@@ -10,6 +10,8 @@
   gather_facts: yes
   roles:
     - common
+    - backend
+    # - frontend
   
 
 # move this code into ec2_launch - tasks- main.yml file
