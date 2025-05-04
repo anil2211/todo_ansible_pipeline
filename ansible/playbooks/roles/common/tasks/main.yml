@@ -23,8 +23,7 @@
     dest: "/opt/todo-app"
     recursive: yes
     rsync_opts:
-       -"--exclude=.git"
-       -"--exclude=.github"
-       -"--exclude=ansible"
+      - --exclude=.git
+      - --exclude=.github
+      - --exclude=ansible
 
-  
