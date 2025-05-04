@@ -11,10 +11,11 @@
 
 - name: Start and enable Apache
   become: yes
-  service: yes
-  name: httpd
-  state: started
-  enabled: yes
+  service:
+    name: httpd
+    state: started
+    enabled: yes
+
 
 - name: Copy Source code
   become: yes
