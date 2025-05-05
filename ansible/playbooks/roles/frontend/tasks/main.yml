@@ -1,20 +1,13 @@
 ---
 # tasks file for frontend
-- name: Install dependencies on todo-frontend
-  become: yes
-  npm:
-     path: /opt/todo-app/todo-frontend
-     state: present
-
-- name: Build frontend
+- name: Install frontend dependencies
   become: yes
   npm:
     path: /opt/todo-app/todo-frontend
-    command: build
     state: present
 
-# - name: Install PM2 globally
-#   become: yes
-#   npm: 
-#      name: pm2
-#      global: yes
+- name: Run frontend build
+  become: yes
+  args:
+    chdir: /opt/todo-app/todo-frontend
+  command: npm run build
