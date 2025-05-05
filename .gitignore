@@ -3,3 +3,4 @@ todo-app/todo-backend/node_modules
 todo-app/todo-frontend/node_module
 todo-backend/node_modules
 todo-frontend/node_modules
+ansible_demo.pem
