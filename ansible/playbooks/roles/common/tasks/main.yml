@@ -7,6 +7,7 @@
       - httpd
       - nodejs
       - npm
+      - dotenv
     state: present
 
 - name: Start and enable Apache
