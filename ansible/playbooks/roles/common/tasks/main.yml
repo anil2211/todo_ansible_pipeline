@@ -26,4 +26,5 @@
       - --exclude=.git
       - --exclude=.github
       - --exclude=ansible
+      - --include=.todo-backend/.env
 
