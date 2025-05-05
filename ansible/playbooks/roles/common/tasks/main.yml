@@ -28,3 +28,6 @@
       - --exclude=ansible
       - --include=todo-backend/.env
 
+- name: Debug ssh key path
+  debug:
+    var: dest
