@@ -5,7 +5,7 @@ const bodyParser = require("body-parser")
 const dotenv = require("dotenv")
 const connectDB = require("./db")
 const todoRoutes = require("./routes/todoRoutes")
-// const path = require("path")
+const path = require("path")
 dotenv.config()
 
 const app = express();
@@ -13,15 +13,15 @@ app.use(cors())
 app.use(bodyParser.json())
 app.use(express.json())
 
-// app.use('/api', todoRoutes);
-app.use('/', todoRoutes);
+app.use('/api', todoRoutes);
+// app.use('/', todoRoutes);
 
 
-// app.use(express.static(path.join(__dirname, "../todo-frontend/build")))
+app.use(express.static(path.join(__dirname, "../todo-frontend/build")))
 
-// app.get("*", (req, res) =>{
-//     res.sendFile(path.join(__dirname, "../todo-frontend/build", "index.html"))
-// })
+app.get("*", (req, res) =>{
+    res.sendFile(path.join(__dirname, "../todo-frontend/build", "index.html"))
+})
 
 // app.use()
 
