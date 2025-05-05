@@ -1,10 +1,18 @@
 ---
 # tasks file for backend
-- name: Install dependencies on todo-backend
+- name: Install dependencies on todo-backend from package.json
   become: yes
-  npm: 
+  npm:
      path: /opt/todo-app/todo-backend
      state: present
+
+- name: Install dotenv Node.js module
+  become: yes
+  npm:
+    name: dotenv
+    path: /opt/todo-app/todo-backend
+    state: present
+
 
 - name: Install PM2 globally
   become: yes

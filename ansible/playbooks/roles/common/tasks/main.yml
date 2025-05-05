@@ -7,7 +7,6 @@
       - httpd
       - nodejs
       - npm
-      - dotenv
     state: present
 
 - name: Start and enable Apache
@@ -24,7 +23,17 @@
     dest: "/opt/todo-app"    #folder in which the code will be copied
     recursive: yes
     rsync_opts:
+      - --include=todo-backend/
+      - --include=todo-backend/.env
       - --exclude=.git
       - --exclude=.github
       - --exclude=ansible
-      - --include=todo-backend/.env
+
+- name: Copy .env file to remote
+  become: yes
+  copy:
+    src: "{{ playbook_dir }}/../../todo-backend/.env"
+    dest: /opt/todo-app/todo-backend/.env
+    mode: '0644'
+    owner: ec2-user
+    group: ec2-user
