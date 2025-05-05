@@ -13,7 +13,8 @@ app.use(cors())
 app.use(bodyParser.json())
 app.use(express.json())
 
-app.use('/api', todoRoutes);
+// app.use('/api', todoRoutes);
+app.use('/', todoRoutes);
 
 
 // app.use(express.static(path.join(__dirname, "../todo-frontend/build")))
