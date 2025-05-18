@@ -1,6 +1,6 @@
 ---
 # tasks file for ec2_launch
-- name: Adding ssh access to a security group
+- name: Adding ssh access to a security group on ec2
   amazon.aws.ec2_group:
     name: default_remote
     description: security group for Ec2 instance launched via ansible
