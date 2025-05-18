@@ -5,7 +5,7 @@
     name: default_remote
     description: security group for Ec2 instance launched via ansible
     region: ap-south-1
-    # rules:
+    rules:
     #   - proto: tcp
     #     from_port: 22
     #     to_port: 22
