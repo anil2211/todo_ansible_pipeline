@@ -37,7 +37,7 @@
 
 - name: Launch EC2 instance
   amazon.aws.ec2_instance:
-    name: Ansible-created-remote
+    name: Ansible-created-remote-ec2
     key_name: "{{ ec2_key_name }}"
     region: "{{aws_region}}"
     instance_type: "{{ec2_instance_type}}"
