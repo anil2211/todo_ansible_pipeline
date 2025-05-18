@@ -1,65 +1,65 @@
----
-# tasks file for backend
+# ---
+# # tasks file for backend
 
-- name: Install dependencies from package.json
-  become: yes
-  npm:
-    path: /opt/todo-app/todo-backend
-    state: present
+# - name: Install dependencies from package.json
+#   become: yes
+#   npm:
+#     path: /opt/todo-app/todo-backend
+#     state: present
 
-- name: Install dotenv Node.js module
-  become: yes
-  npm:
-    name: dotenv
-    path: /opt/todo-app/todo-backend
-    state: present
+# - name: Install dotenv Node.js module
+#   become: yes
+#   npm:
+#     name: dotenv
+#     path: /opt/todo-app/todo-backend
+#     state: present
 
-- name: Install PM2 globally
-  become: yes
-  npm:
-    name: pm2
-    global: yes
+# - name: Install PM2 globally
+#   become: yes
+#   npm:
+#     name: pm2
+#     global: yes
 
-- name: Check if start.js exists
-  stat:
-    path: /opt/todo-app/todo-backend/start.js
-  register: start_js
+# - name: Check if start.js exists
+#   stat:
+#     path: /opt/todo-app/todo-backend/start.js
+#   register: start_js
 
-- name: Debug start.js existence
-  debug:
-    msg: "start.js exists? {{ start_js.stat.exists }}"
+# - name: Debug start.js existence
+#   debug:
+#     msg: "start.js exists? {{ start_js.stat.exists }}"
 
-- name: Create PM2 ecosystem.config.js
-  become: yes
-  copy:
-    dest: /opt/todo-app/todo-backend/ecosystem.config.js
-    content: |
-      module.exports = {
-        apps: [{
-          name: "todo-backend",
-          script: "start.js",
-          cwd: "/opt/todo-app/todo-backend",
-          env: {
-            NODE_ENV: "production",
-            PORT: 3002
-          }
-        }]
-      };
-    mode: '0644'
-  when: start_js.stat.exists
+# - name: Create PM2 ecosystem.config.js
+#   become: yes
+#   copy:
+#     dest: /opt/todo-app/todo-backend/ecosystem.config.js
+#     content: |
+#       module.exports = {
+#         apps: [{
+#           name: "todo-backend",
+#           script: "start.js",
+#           cwd: "/opt/todo-app/todo-backend",
+#           env: {
+#             NODE_ENV: "production",
+#             PORT: 3002
+#           }
+#         }]
+#       };
+#     mode: '0644'
+#   when: start_js.stat.exists
 
-- name: Start backend using PM2 ecosystem config
-  become: yes
-  command: pm2 start ecosystem.config.js
-  args:
-    chdir: /opt/todo-app/todo-backend
-  when: start_js.stat.exists
+# - name: Start backend using PM2 ecosystem config
+#   become: yes
+#   command: pm2 start ecosystem.config.js
+#   args:
+#     chdir: /opt/todo-app/todo-backend
+#   when: start_js.stat.exists
 
-- name: Set PM2 to start on boot
-  become: yes
-  command: pm2 startup
-  args:
-    chdir:
+# - name: Set PM2 to start on boot
+#   become: yes
+#   command: pm2 startup
+#   args:
+#     chdir:
 
 
 
@@ -104,19 +104,19 @@
 #   debug: 
 #     var: pm2_list
     
-# - name: Start or restart the backend with pm2 and dotenv
-#   become: yes
-#   command : "pm2 start -f start.js --env production"
-#   args:
-#     chdir: /opt/todo-app/todo-backend
-#   when: start_js.stat.exists
-
-# # - name: Start or restart the backend with pm2
+# # - name: Start or restart the backend with pm2 and dotenv
 # #   become: yes
-# #   command : "pm2 start -f start.js"
+# #   command : "pm2 start -f start.js --env production"
 # #   args:
 # #     chdir: /opt/todo-app/todo-backend
 # #   when: start_js.stat.exists
+
+# - name: Start or restart the backend with pm2
+#   become: yes
+#   command : "pm2 start -f start.js"
+#   args:
+#     chdir: /opt/todo-app/todo-backend
+#   when: start_js.stat.exists
 
 # - name: Set pm2 to start on boot
 #   become: yes
@@ -124,9 +124,61 @@
 #   args:
 #     chdir: /opt/todo-app/todo-backend
 
-# - name: Reload backend with PM2
-#   become: yes
-#   command: pm2 reload ecosystem.config.js
-#   args:
-#     chdir: /opt/todo-app/todo-backend
-#   when: start_js.stat.exists
+
+# cccccccccccccccccccccccccccccccccccccccc
+- name: Install backend dependencies
+  become: yes
+  npm:
+    path: /opt/todo-app/todo-backend
+    state: present
+
+- name: Install PM2 globally
+  become: yes
+  npm:
+    name: pm2
+    global: yes
+
+- name: Create ecosystem.config.js for PM2
+  become: yes
+  copy:
+    dest: /opt/todo-app/todo-backend/ecosystem.config.js
+    content: |
+      module.exports = {
+        apps: [{
+          name: "todo-backend",
+          script: "start.js",
+          cwd: "/opt/todo-app/todo-backend",
+          env: {
+            NODE_ENV: "production",
+            PORT: 3002
+          }
+        }]
+      };
+    mode: '0644'
+
+- name: Start backend using PM2
+  become: yes
+  command: pm2 start ecosystem.config.js
+  args:
+    chdir: /opt/todo-app/todo-backend
+
+- name: Set PM2 to run on startup
+  become: yes
+  command: pm2 startup systemd
+  register: pm2_startup
+
+- name: Run pm2 startup command output
+  become: yes
+  command: "{{ pm2_startup.stdout_lines[-1] }}"
+  when: pm2_startup.stdout_lines is defined
+
+- name: Save PM2 process list
+  become: yes
+  command: pm2 save
+
+- name: Wait for backend to start on port 3002
+  wait_for:
+    port: 3002
+    delay: 5
+    timeout: 60
+    state: started
