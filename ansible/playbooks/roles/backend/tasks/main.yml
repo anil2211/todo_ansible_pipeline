@@ -39,15 +39,29 @@
   debug: 
     var: pm2_list
     
-- name: Start or restart the backend with pm2
+- name: Start or restart the backend with pm2 and dotenv
   become: yes
-  command : "pm2 start -f start.js"
+  command : "pm2 start -f start.js --env production"
   args:
     chdir: /opt/todo-app/todo-backend
   when: start_js.stat.exists
+
+# - name: Start or restart the backend with pm2
+#   become: yes
+#   command : "pm2 start -f start.js"
+#   args:
+#     chdir: /opt/todo-app/todo-backend
+#   when: start_js.stat.exists
 
 - name: Set pm2 to start on boot
   become: yes
   command: pm2 startup
   args:
     chdir: /opt/todo-app/todo-backend
+
+- name: Reload backend with PM2
+  become: yes
+  command: pm2 reload ecosystem.config.js
+  args:
+    chdir: /opt/todo-app/todo-backend
+  when: start_js.stat.exists
