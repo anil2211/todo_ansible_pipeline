@@ -1,5 +1,5 @@
 ---
-- name: Provision EC2 instance and install
+- name: Provision EC2 instance and installation
   hosts: 0.0.0.0 #localhost
   gather_facts: no
   roles:
