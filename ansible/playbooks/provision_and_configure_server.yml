@@ -1,6 +1,6 @@
 ---
 - name: Provision EC2 instance and installation
-  hosts: 0.0.0.0 #localhost
+  hosts: localhost
   gather_facts: no
   roles:
     - ec2_launch
