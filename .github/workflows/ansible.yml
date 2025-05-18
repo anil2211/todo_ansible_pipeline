@@ -1,4 +1,4 @@
-name: provisioning of ec2 and configuring with ansible
+name: provisioning of ec2 and configurations with ansible 
 on:
     push:
         branches:
