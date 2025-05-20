@@ -5,3 +5,14 @@ aws_region: ap-south-1
 ec2_instance_type: t2.micro
 ec2_ami_id: ami-062f0cc54dbfd8ef1
 ec2_key_name: ansible_demo
+ec2_instance_count: 2
+ec2_ssh_user: ec2-user
+security_grp_name: default-remote
+security_group_rules:
+  - proto: tcp
+    ports: [22, 80, 443]
+    cidr_ip: 0.0.0.0/0
+  - proto: tcp
+    ports: [3000, 3001, 3002]
+    cidr_ip: 0.0.0.0/0
+  

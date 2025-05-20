@@ -3,18 +3,19 @@
 - name: Install common packages
   become: yes
   package:
-    name:
-      - httpd
-      - nodejs
-      - npm
+    name: "{{ item.pk_name }}"
+      # - httpd
+      # - nodejs
+      # - npm
     state: present
+  with_items: "{{ package_names }}"  
 
-- name: Start and enable Apache
-  become: yes
-  service:
-    name: httpd
-    state: started
-    enabled: yes
+# - name: Start and enable Apache
+#   become: yes
+#   service:
+#     name: httpd
+#     state: started
+#     enabled: yes
 
 - name: Copy Source code from local to remote
   become: yes
