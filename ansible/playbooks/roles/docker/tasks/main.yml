@@ -8,6 +8,31 @@
     enabled: yes
   become: yes
 
+- name: Create Docker CLI plugin directroy
+  file:
+    path: /usr/local/lib/docker/cli-plugins
+    state: directory
+    mode: "0755"
+  become: yes
+
+- name: Get latest Docker compose release version
+  uri:
+    url: https://api.github.com/repos/docker/compose/releases/latest
+    return_content: yes
+  register: docker_compose_latest
+
+- name: Set Docker Compose Version
+  set_fact:
+     docker_compose_version: "{{ docker_compose_latest.json.tag_name }}"  
+
+- name: Install Docker Compose Plugin
+  get_url:
+    url: "https://github/comdocker/compose/releases/download/ {{ docker_compose_version}}/docker-compose-{{ ansible_system}}-{{ ansible_architecture}}"
+    dest: /usr/local/lib/docker/cli-plugins/docker-compose
+    mode: "0755"
+  become: yes
+
+
 - name: Create Docker group
   group: 
     name: docker
@@ -20,61 +45,71 @@
     append: yes
   become: yes
 
-- name: Get ECR login token
-  shell: |
-    aws ecr get-login-password --region {{ aws_region }} 
-  register: ecr_token
 
-- name: Debug ECR Token
-  debug: 
-    var: ecr_token
-
-- name: Login into ECR registry
-  community.docker.docker_login:
-    registry_url: "{{ aws_account_id }}.dkr.ecr.{{ aws_region }}.amazonaws.com"
-    username: AWS
-    password: "{{ ecr_token.stdout }}"
-    reauthorize: yes
-  register: docker_login_result
-
-- name: Debug ECR Token
-  debug: 
-    var: docker_login_result
-
-- name: Pull latest Backend image
-  docker_image:
-    name: "{{ backend_ecr_uri }}:latest"
-    source: pull
-    force_source: yes
-
-- name: Get SSM Parameter
-  shell: |
-    aws ssm get-parameter \
-    --name "/{{ env_var }}/backend/MONGODB_URI" \
-    --with-decryption \
-    --query "Parameter.Value" \
-    --output text \
-    --region {{ aws_region }}
-  register: mongodb_uri
+- name: Run Docker Compose
+  Community.docker.docker_compose_v2:
+    project_src: /opt/todo-app
+    state: present
+  become: yes
 
 
-- name: Create .env file from SSM paramenters
-  copy: 
-    content: |
-      MONGODB_URI={{mongodb_uri.stdout }}
-      NODE_ENV=production
-      PORT=3002
-    dest: /opt/todo-app/todo-backend/.env
-    mode: "0600"
 
-- name: Start the backend container
-  docker_container:
-    name: backend
-    image: "{{ backend_ecr_uri }}:latest"
-    state: started
-    restart_policy: always
-    ports: 
-      - "3002:3002"
-    volumes:
-      - /var/log/todo-app:/var/log/todo-app
-    env_file: /opt/todo-app/todo-backend/.env
+
+# - name: Get ECR login token
+#   shell: |
+#     aws ecr get-login-password --region {{ aws_region }} 
+#   register: ecr_token
+
+# - name: Debug ECR Token
+#   debug: 
+#     var: ecr_token
+
+# - name: Login into ECR registry
+#   community.docker.docker_login:
+#     registry_url: "{{ aws_account_id }}.dkr.ecr.{{ aws_region }}.amazonaws.com"
+#     username: AWS
+#     password: "{{ ecr_token.stdout }}"
+#     reauthorize: yes
+#   register: docker_login_result
+
+# - name: Debug ECR Token
+#   debug: 
+#     var: docker_login_result
+
+# - name: Pull latest Backend image
+#   docker_image:
+#     name: "{{ backend_ecr_uri }}:latest"
+#     source: pull
+#     force_source: yes
+
+# - name: Get SSM Parameter
+#   shell: |
+#     aws ssm get-parameter \
+#     --name "/{{ env_var }}/backend/MONGODB_URI" \
+#     --with-decryption \
+#     --query "Parameter.Value" \
+#     --output text \
+#     --region {{ aws_region }}
+#   register: mongodb_uri
+
+
+# - name: Create .env file from SSM paramenters
+#   copy: 
+#     content: |
+#       MONGODB_URI={{mongodb_uri.stdout }}
+#       NODE_ENV=production
+#       PORT=3002
+#     dest: /opt/todo-app/todo-backend/.env
+#     mode: "0600"
+
+# - name: Start the backend container
+#   docker_container:
+#     name: backend
+#     image: "{{ backend_ecr_uri }}:latest"
+#     state: started
+#     restart_policy: always
+#     ports: 
+#       - "3002:3002"
+#     volumes:
+#       - /var/log/todo-app:/var/log/todo-app
+#     env_file: /opt/todo-app/todo-backend/.env
