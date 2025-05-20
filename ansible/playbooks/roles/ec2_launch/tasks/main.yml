@@ -1,107 +1,74 @@
----
+# ---
 # tasks file for ec2_launch
-- name: Adding ssh access to a security group on ec2
+
+- name: Add SSH and HTTP access to EC2 Security Group
   amazon.aws.ec2_group:
-    name: "{{security_grp_name}}"
-    description: security group for Ec2 instance launched via ansible
+    name: "{{ security_grp_name }}"
+    description: Security group for EC2 instance launched via Ansible
     region: "{{ aws_region }}"
     rules: "{{ security_group_rules }}"
-      # - proto: tcp
-      #   from_port: 22
-      #   to_port: 22
-      #   cidr_ip: 0.0.0.0/0
-      # - proto: tcp
-      #   from_port: 80
-      #   to_port: 80
-      #   cidr_ip: 0.0.0.0/0
-      # - proto: tcp
-      #   from_port: 3000
-      #   to_port: 3000
-      #   cidr_ip: 0.0.0.0/0
-      # - proto: tcp
-      #   from_port: 3001
-      #   to_port: 3001
-      #   cidr_ip: 0.0.0.0/0
-      # - proto: tcp
-      #   from_port: 3002
-      #   to_port: 3002
-      #   cidr_ip: 0.0.0.0/0        
-      # - proto: tcp
-      #   from_port: 8080
-      #   to_port: 8080
-      #   cidr_ip: 0.0.0.0/0
     rules_egress:
       - proto: all
         cidr_ip: 0.0.0.0/0
   register: security_group
 
-- name: Getting information about exixting EC2 instance
+- name: Get information about existing EC2 instances
   amazon.aws.ec2_instance_info:
     region: "{{ aws_region }}"
     filters:
-       "tag:Name" : "Ansible-created-instance-*"
-       instance-state-name: ["running","pending"]
+      "tag:Name": "Ansible-created-instance-*"
+      instance-state-name: ["running", "pending"]
   register: existing_instances
 
-- name: Calculate number of instance to launch
+- name: Calculate number of instances to launch
   set_fact:
-    instances_to_launch: "{{ ec2_instance_count|int - existing_instances.instances|length}}"
+    instances_to_launch: "{{ ec2_instance_count | int - existing_instances.instances | length }}"
 
-- name: debug number of instances to launch
+- name: Debug number of instances to launch
   debug:
-    msg: "{{ instances_to_launch}}"
+    msg: "Number of new instances to launch: {{ instances_to_launch }}"
 
-
-- name: Launch EC2 instance
+- name: Launch EC2 instances
   amazon.aws.ec2_instance:
-    name: Ansible-created-instance-{{ exixting_instances.instances|length + item}}
+    name: "Ansible-created-instance-{{ existing_instances.instances | length + item }}"
     key_name: "{{ ec2_key_name }}"
-    region: "{{aws_region}}"
-    instance_type: "{{ec2_instance_type}}"
-    image_id: "{{ec2_ami_id}}"
-    # count: 1
+    region: "{{ aws_region }}"
+    instance_type: "{{ ec2_instance_type }}"
+    image_id: "{{ ec2_ami_id }}"
     security_group: "{{ security_group.group_id }}"
     wait: yes
     network:
-    assign_public_ip: yes
+      assign_public_ip: yes
   register: new_ec2
-  loop: "{{range(1,instances_to_launch|int +1)| list  }}"
-  when: instances_to_launch|int>0
+  loop: "{{ range(1, instances_to_launch | int + 1) | list }}"
+  when: instances_to_launch | int > 0
 
 - name: Combine existing and new instances
   set_fact:
-    all_instances: "{{existing_instances.instances + ( new_ec2.results|default([]) | map(attribute='instances')|flatten) }}"
+    all_instances: "{{ existing_instances.instances + (new_ec2.results | default([]) | map(attribute='instances') | flatten) }}"
 
-
-
-    
-- name: Waiting for instance to be ready
+- name: Wait for instances to be reachable via SSH
   wait_for:
     host: "{{ item.public_dns_name }}"
     port: 22
     delay: 30
     timeout: 300
     state: started
-  loop: "{{ all_instances }}"  
-  # when: ec2.instances is defined and ec2.instances | length > 0
+  loop: "{{ all_instances }}"
 
-- name: Add EC2 instance to dynamic inventory
+- name: Add EC2 instances to dynamic inventory group
   add_host:
     name: "{{ item.public_dns_name }}"
     groups: launched_ec2_instances
-    ansible_ssh_private_key_file: "{{ec2_ssh_key_path}}"
-    ansible_user: "{{ ec2_ssh_user}}"
-    ansible_ssh_common_args: '-o StrictHostKeyChecking=no'
-  loop: "{{ all_instances }}"  
-    # ansible_python_interpreter: /usr/bin/python3
+    ansible_ssh_private_key_file: "{{ ec2_ssh_key_path }}"
+    ansible_user: "{{ ec2_ssh_user }}"
+    ansible_ssh_common_args: "-o StrictHostKeyChecking=no"
+  loop: "{{ all_instances }}"
 
-- name: Debug ssh key path
+- name: Debug SSH key path
   debug:
     var: ec2_ssh_key_path
 
-
-- name: Debug dynamic host group
+- name: Debug dynamic inventory group
   debug:
-    msg: "All instances: {{ groups['launched_ec2_instances']}}"
-    # var: groups['launched_ec2_instances']
-
+    msg: "All instances in dynamic inventory: {{ groups['launched_ec2_instances'] }}"
