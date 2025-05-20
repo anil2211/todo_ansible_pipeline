@@ -3,7 +3,7 @@
 
 aws_region: ap-south-1
 ec2_instance_type: t2.micro
-ec2_ami_id: ami-062f0cc54dbfd8ef1
+ec2_ami_id: ami-0af9569868786b23a
 ec2_key_name: ansible_demo
 ec2_instance_count: 2
 ec2_ssh_user: ec2-user
