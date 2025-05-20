@@ -45,7 +45,7 @@
 
 - name: Calculate number of instance to launch
   set_fact:
-    instances_to_launch: "{{ ec2_instance_count|int - existing_instances.instance|length}}"
+    instances_to_launch: "{{ ec2_instance_count|int - existing_instances.instances|length}}"
 
 - name: debug number of instances to launch
   debug:
