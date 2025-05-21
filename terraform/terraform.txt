@@ -1,0 +1,6 @@
+create teraaform file 
+then
+terrafom init
+terraform plan
+terraform apply
+terraform destroy

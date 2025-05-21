@@ -1,8 +1,10 @@
 name: provisioning of ec2 and configurations with ansible 
 on:
-    push:
-        branches:
-            - main
+  workflow_dispatch:
+# on:
+#     push:
+#         branches:
+#             - main
 
 jobs:
   provision_ec2:
