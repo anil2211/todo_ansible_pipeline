@@ -1,13 +1,16 @@
 resource "aws_instance" "terraform-ec2" {
     # ami= "ami-0af9569868786b23a"
-    ami = var.ami_id
+    ami = var.instance_config.ami_id
     # instance_type = "t2.micro"
-    instance_type = var.instance_type
+    instance_type = var.instance_config.instance_type
     # count = 1
-    count = var.instance_count
+    count = var.instance_config.instance_count
     tags = {
-        Name = var.instance_name
+        Name = var.instance_config.instance_name
     }
+    
+    vpc_security_group_ids = [aws_security_group.sg_example.id]
+    subnet_id = var.subnet_id
     key_name = "ansible_demo"
 
     connection {
@@ -34,6 +37,7 @@ resource "aws_instance" "terraform-ec2" {
 resource "aws_security_group" "sg_example" {
  name = var.aws_security_group_name
  description = "Allow traffic to ec2 instance"
+ vpc_id = var.vpc_id
   
   dynamic "ingress" {
    for_each = var.ingress_ports
