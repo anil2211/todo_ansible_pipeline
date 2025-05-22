@@ -4,3 +4,9 @@ todo-app/todo-frontend/node_module
 todo-backend/node_modules
 todo-frontend/node_modules
 ansible_demo.pem
+terraform/.terraform.lock.hcl
+terraform/terraform.tfstate
+terraform/terraform.tfstate.backup
+terraform/.terraform/providers/registry.terraform.io/hashicorp/aws/5.98.0/windows_amd64/LICENSE.txt
+terraform/.terraform/providers/registry.terraform.io/hashicorp/aws/5.98.0/windows_amd64/terraform-provider-aws_v5.98.0_x5.exe
+terraform/.terraform/terraform.tfstate
