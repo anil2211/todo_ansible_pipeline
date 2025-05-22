@@ -7,6 +7,7 @@ ansible_demo.pem
 .terraform/
 *.tfstate
 *.exe
+git-filter-repo
 terraform/.terraform
 terraform/.terraform.lock.hcl
 terraform/terraform.tfstate
